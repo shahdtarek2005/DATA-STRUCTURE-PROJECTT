@@ -16,7 +16,6 @@ public class BinarySearchh {
      Student root;   
 
 
-    // INSERT FUNCTION HERE
     public void insert(int id, String name, double gpa) {
         root = insertRec(root, id, name, gpa);
     }
