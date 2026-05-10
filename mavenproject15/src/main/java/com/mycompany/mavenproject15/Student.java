@@ -11,25 +11,20 @@ package com.mycompany.mavenproject15;
 public class Student 
 {
  int studentid;
- String studentname;
- double gpa ;
- Student leftnode;
- Student rightnode;
-  public Student(int studentid, String studentname, double gpa)
-  {
-        this.studentid = studentid;
-        this.studentname = studentname;
+    String studentname;
+    double gpa;
+
+    public Student(int studentId, String studentName, double gpa) {
+        this.studentid = studentId;
+        this.studentname = studentName;
         this.gpa = gpa;
-        leftnode =null;
-        rightnode=null;
-  }
-  
-  public void display()
-  {
-      System.out.println("id :"+studentid);
-      System.out.println("GPA :"+studentname);
-      System.out.println("id :"+gpa);
-  }
+    }
+
+    public void display() {
+        System.out.println("ID: " + studentid + ", Name: " + studentname + ", GPA: " + gpa);
+    }
+ @Override
+    public String toString() { return "ID: " + studentid + ", Name: " + studentname + ", GPA: " + gpa; }
  
  
 }
