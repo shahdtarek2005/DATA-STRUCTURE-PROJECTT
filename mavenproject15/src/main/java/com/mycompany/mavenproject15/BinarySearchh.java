@@ -13,191 +13,145 @@ import java.util.Comparator;
  * @author shahd
  */
 public class BinarySearchh {
-     Student root;   
-
+     nodee root;
+    int size;
 
     public void insert(int id, String name, double gpa) {
         root = insertRec(root, id, name, gpa);
     }
 
-    private Student insertRec(Student root, int id, String name, double gpa) {
-
+    private nodee insertRec(nodee root, int id, String name, double gpa) {
         if (root == null) {
-            return new Student(id, name, gpa);
+            size++;
+            return new nodee(new Student(id, name, gpa));
         }
-
-        if (id < root.studentid) {
-            root.leftnode = insertRec(root.leftnode, id, name, gpa);
+        if (id < root.data.studentid) {
+            root.left = insertRec(root.left, id, name, gpa);
+        } else if (id > root.data.studentid) {
+            root.right = insertRec(root.right, id, name, gpa);
+        } else {
+            System.out.println("Duplicate ID not allowed: " + id);
         }
+        return root;
+    }
 
-        else if (id > root.studentid) {
-            root.rightnode = insertRec(root.rightnode, id, name, gpa);
-        }
-
-        else {
-            System.out.println("Duplicate ID not allowed!");
-        }
-
-        return root; 
-}
     public Student search(int id) {
         return searchRec(root, id);
     }
 
-    private Student searchRec(Student root, int id) {
-
-        if (root == null || root.studentid == id) {
-            return root;
+    private Student searchRec(nodee root, int id) {
+        if (root == null || root.data.studentid == id) {
+            return root == null ? null : root.data;
         }
-
-        if (id < root.studentid) {
-            return searchRec(root.leftnode, id);
+        if (id < root.data.studentid) {
+            return searchRec(root.left, id);
+        } else {
+            return searchRec(root.right, id);
         }
-
-        return searchRec(root.rightnode, id);
     }
+
+    public int size() {
+        return sizeRec(root);
+    }
+
+    private int sizeRec(nodee root) {
+        if (root == null) return 0;
+        return 1 + sizeRec(root.left) + sizeRec(root.right);
+    }
+
+    public boolean remove(int id) {
+        if (search(id) == null) return false;
+        root = removeRec(root, id);
+        size--;
+        return true;
+    }
+
+    private nodee removeRec(nodee root, int id) {
+        if (root == null) return null;
+        if (id < root.data.studentid) {
+            root.left = removeRec(root.left, id);
+        } else if (id > root.data.studentid) {
+            root.right = removeRec(root.right, id);
+        } else {
+            if (root.left == null) return root.right;
+            if (root.right == null) return root.left;
+            nodee successor = findMin(root.right);
+            root.data = successor.data;
+            root.right = removeRec(root.right, successor.data.studentid);
+        }
+        return root;
+    }
+
+    private nodee findMin(nodee root) {
+        while (root.left != null) root = root.left;
+        return root;
+    }
+
     public void display() {
         inorder(root);
     }
 
-    private void inorder(Student root) {
-
+    private void inorder(nodee root) {
         if (root != null) {
-
-            inorder(root.leftnode);
-
-            System.out.println(
-                    "ID: " + root.studentid+
-                    " Name: " + root.studentname +
-                    " GPA: " + root.gpa
-            );
-
-            inorder(root.rightnode);
+            inorder(root.left);
+            root.data.display();
+            inorder(root.right);
         }
     }
-     public int size() {
-        return sizeRec(root);
-    }
 
-    private int sizeRec(Student root) {
-
-        if (root == null) {
-            return 0;
+    public void bottom10() {
+        if (size == 0) {
+            System.out.println("No students in the system.");
+            return;
         }
-
-        return 1 + sizeRec(root.leftnode) + sizeRec(root.rightnode);
-    }
-    public void remove(int id) {
-        root = removeRec(root, id);
-    }
-
-    private Student removeRec(Student root, int id) {
-
-        if (root == null) {
-            return null;
-        }
-
-        if (id < root.studentid) {
-            root.leftnode = removeRec(root.leftnode, id);
-        }
-
-        else if (id > root.studentid) {
-            root.rightnode = removeRec(root.rightnode, id);
-        }
-
-        else {
-
-            if (root.leftnode == null) {
-                return root.rightnode;
-            }
-
-            else if (root.rightnode == null) {
-                return root.leftnode;
-            }
-
-            root.studentid = minValue(root.rightnode);
-
-            root.rightnode = removeRec(root.rightnode, root.studentid);
-        }
-
-        return root;
-    }
-     private int minValue(Student root) {
-
-        int min = root.studentid;
-
-        while (root.leftnode != null) {
-            min = root.leftnode.studentid;
-            root = root.leftnode;
-        }
-
-        return min;
-    }
-     private void collectStudents(Student root, ArrayList<Student> list) {
-
-    if (root != null) {
-
-        collectStudents(root.leftnode, list);
-
-        list.add(root);
-
-        collectStudents(root.rightnode, list);
-    }
-}
-public void bottom5() {
-    bottom5(root);
-}
-
-int count = 0;
-
-public void bottom5( Student node) {
-    if (node == null || count == 5) {
-        return;
-    }
-
-    bottom5(node.rightnode);
-
-    if (count < 5) {
-        System.out.println(node.studentname);
-        count++;
-    }
-
-    bottom5(node.leftnode);
-}
-
-     public void bottom10() {
-
         ArrayList<Student> list = new ArrayList<>();
-
-        collectStudents(root, list);
-
-        list.sort(Comparator.comparingDouble(s -> s.gpa));
-
-        int limit = Math.min(10, list.size());
-
-        for (int i = 0; i < limit; i++) {
-
-            Student s = list.get(i);
-
-            System.out.println(
-                    s.studentid + " " +
-                    s.studentname + " " +
-                    s.gpa
-            );
+        collectAll(root, list);
+        list.sort((a, b) -> Double.compare(a.gpa, b.gpa));
+        System.out.println(" Bottom 10 Students by GPA (Lowest to Highest) ");
+        int start = Math.max(0, list.size() - 10);
+        for (int i = start; i < list.size(); i++) {
+            list.get(i).display();
         }
     }
-     public void GPAfunction() {
-    System.out.println("Students with GPA < 2.0:");
-    GPAfunction(root);
-}
 
-private void GPAfunction(Student root) {
-    if (root != null) {
-        GPAfunction(root.leftnode);
-        if (root.gpa < 2.0) {
-            root.display();
+    public void bottom5() {
+        if (size == 0) {
+            System.out.println("No students in the system.");
+            return;
         }
-        GPAfunction(root.rightnode);
+        ArrayList<Student> list = new ArrayList<>();
+        collectAll(root, list);
+        list.sort((a, b) -> Integer.compare(b.studentid, a.studentid));
+        System.out.println(" Bottom 5 Students by ID (Highest to Lowest)");
+        int start = Math.max(0, list.size() - 5);
+        for (int i = start; i < list.size(); i++) {
+            list.get(i).display();
+        }
     }
-}
+
+    private void collectAll(nodee root, ArrayList<Student> list) {
+        if (root != null) {
+            collectAll(root.left, list);
+            list.add(root.data);
+            collectAll(root.right, list);
+        }
+    }
+
+    public void separateGPAUnder2() {
+        System.out.println(" Students with GPA < 2.0");
+        boolean found = printLowGPA(root);
+        if (!found) System.out.println("No students with GPA below 2.0");
+    }
+
+    private boolean printLowGPA(nodee root) {
+        if (root == null) return false;
+        boolean left = printLowGPA(root.left);
+        boolean current = false;
+        if (root.data.gpa < 2.0) {
+            root.data.display();
+            current = true;
+        }
+        boolean right = printLowGPA(root.right);
+        return left || current || right;
+    }
 }
