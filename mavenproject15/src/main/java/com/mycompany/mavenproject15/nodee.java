@@ -13,14 +13,24 @@ import com.mycompany.mavenproject15.Student;
 public class nodee 
 {
     Student data;
-    nodee next;
-    
-  public nodee(Student data)
-{ 
-    this.data = data; 
-    this.next = null;
-}
-   
+    nodee left;
+    nodee right;
+
+    public nodee(Student data) {
+        this.data = data;
+        this.left = null;
+        this.right = null;
+    }
+
+    public nodee(Student data, nodee left, nodee right) {
+        this.data = data;
+        this.left = left;
+        this.right = right;
+    }
+
+    public void display() {
+        System.out.print("ID: " + data.studentid + " Name: " + data.studentname + " GPA: " + data.gpa);
+    }
     
     
 }
